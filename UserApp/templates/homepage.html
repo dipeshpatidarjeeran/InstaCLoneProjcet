@@ -1,0 +1,158 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InstaClone Feed</title>
+<style>
+    body {
+    font-family: 'Arial', sans-serif;
+    background: #fafafa;
+    margin: 0;
+    padding: 0;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background: #fff;
+        border-bottom: 1px solid #dbdbdb;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .search-bar {
+        width: 40%;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid #dbdbdb;
+    }
+
+    .profile-icon img {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+    }
+
+    .feed {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .post-card {
+        width: 500px;
+        background: #fff;
+        border: 1px solid #dbdbdb;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        overflow: hidden;
+        transition: box-shadow 0.3s;
+    }
+
+    .post-card:hover {
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .post-profile {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .post-image {
+        width: 100%;
+        display: block;
+    }
+
+    .post-actions {
+        padding: 10px;
+    }
+
+    .like-btn, .comment-btn {
+        border: none;
+        background: none;
+        font-size: 20px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: transform 0.2s;
+    }
+
+    .like-btn:hover, .comment-btn:hover {
+        transform: scale(1.2);
+    }
+
+    .post-caption {
+        padding: 0 10px 10px 10px;
+    }
+
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="logo">InstaClone</div>
+    <input type="text" placeholder="Search" class="search-bar">
+    <div class="profile-icon">
+        <img src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="Profile">
+    </div>
+</nav>
+
+<!-- Feed -->
+<div class="feed">
+
+    <!-- Dummy Post 1 -->
+    <div class="post-card">
+        <div class="post-header">
+            <img class="post-profile" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
+            <span>john_doe</span>
+        </div>
+        <img class="post-image" src="{% static 'ExtraImage/loginImage1.jpg' %}" alt="Post">
+        <div class="post-actions">
+            <button class="like-btn">❤️</button>
+            <button class="comment-btn">💬</button>
+        </div>
+        <div class="post-caption">
+            <strong>john_doe</strong> Enjoying the sunny day! ☀️
+        </div>
+    </div>
+
+    <!-- Dummy Post 2 -->
+    <div class="post-card">
+        <div class="post-header">
+            <img class="post-profile" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
+            <span>jane_smith</span>
+        </div>
+        <img class="post-image" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="Post">
+        <div class="post-actions">
+            <button class="like-btn">❤️</button>
+            <button class="comment-btn">💬</button>
+        </div>
+        <div class="post-caption">
+            <strong>jane_smith</strong> Delicious brunch at my favorite cafe! 🍳
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up • InstaClone</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .signup-container {
+      background-color: #111;
+      border: 1px solid #222;
+      padding: 40px 50px;
+      border-radius: 15px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255, 0, 150, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .signup-container:hover {
+      box-shadow: 0 0 35px rgba(255, 0, 150, 0.3);
+    }
+
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #ff6ec4, #7873f5);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input {
+      background-color: #222;
+      border: 1px solid #333;
+      padding: 12px;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      border-color: #ff6ec4;
+      box-shadow: 0 0 10px rgba(255, 0, 150, 0.3);
+    }
+
+    button {
+      background: linear-gradient(90deg, #ff6ec4, #7873f5);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(255, 0, 150, 0.4);
+    }
+
+    .login-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    .login-link a {
+      color: #ff6ec4;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    small {
+    display: block;
+    margin-top: -10px; /* move it closer to input */
+    margin-bottom: 10px;
+    font-size: 12px;    /* small and subtle */
+    color: #ff6ec4;     /* nice pink to match gradient */
+    font-weight: 400;   /* normal weight */
+    text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Create your account</h2>
+    {% if messages %}
+      {% for message in messages %}
+        <p id="p" style="color: #ff8080;">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Username" onclick="RemoveText()" required>
+      <input type="email" name="email" placeholder="Email address" required>
+      <input type="password" name="password" id="pwd" placeholder="Password" required>
+      <input type="password" name="confirm_password" id="cpwd" placeholder="Confirm Password" required onkeyup="checkPassword()">
+      <small id="msg"></small>
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="/login_user">Log in</a>
+    </div>
+  </div>
+</body>
+<script>
+const form = document.querySelector('form');
+const pwd = document.getElementById("pwd");
+const cpwd = document.getElementById("cpwd");
+const msg = document.getElementById("msg");
+
+function checkPassword() {
+  if (cpwd.value.length > 0) {
+    if (pwd.value !== cpwd.value) {
+      msg.textContent = "Passwords do not match";
+      return false;
+    } else {
+      msg.textContent = "";
+      return true;
+    }
+  } else {
+    msg.textContent = "";
+    return false;
+  }
+}
+
+// form submit event
+form.addEventListener('submit', function(e) {
+  if (!checkPassword()) {
+    e.preventDefault(); // submit block
+    cpwd.focus();
+  }
+});
+
+const user = document.getElementsByName("username")[0];
+const p = document.getElementById("p");
+
+function RemoveText() {
+    if (p) {
+        p.textContent = '';
+    }
+}
+if (user) {
+    user.addEventListener('click', RemoveText);
+}
+</script>
+
+</html>
