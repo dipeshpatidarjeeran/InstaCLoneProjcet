@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,36 +5,99 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InstaClone Feed</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
+    /* Dark Theme */
     body {
-    font-family: 'Arial', sans-serif;
-    background: #fafafa;
-    margin: 0;
-    padding: 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #060606;
+        color: #eaeaea;
+        margin: 0;
+        padding: 0;
+        display: flex;
     }
 
+    /* Sidebar */
+    .sidebar {
+        width: 200px;
+        height: 100vh;
+        background: #060606;
+        position: fixed;
+        top: 0;
+        left: 0;
+        border-right: 1px solid #2c2c2c;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+
+    .sidebar .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 40px;
+    }
+
+    .sidebar a {
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        width: 95%;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    .sidebar a i {
+        margin-right: 15px;
+        font-size: 20px;
+    }
+
+    .sidebar a:hover {
+        background: #2c2c2c;
+        color: #fff;
+    }
+
+    /* Navbar */
     .navbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 20px;
-        background: #fff;
-        border-bottom: 1px solid #dbdbdb;
+        padding: 15px 30px;
+        background: #181818;
+        border-bottom: 1px solid #2c2c2c;
         position: sticky;
         top: 0;
         z-index: 1000;
+        width: calc(100% - 250px);
+        margin-left: 250px;
     }
 
-    .logo {
-        font-size: 24px;
-        font-weight: bold;
+    .search-container {
+        position: relative;
+        width: 40%;
     }
 
     .search-bar {
-        width: 40%;
-        padding: 5px 10px;
+        width: 100%;
+        padding: 8px 35px 8px 10px;
         border-radius: 5px;
-        border: 1px solid #dbdbdb;
+        border: 1px solid #333;
+        background: #222;
+        color: #fff;
+    }
+
+    .search-container i {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #fff;
+        font-size: 18px;
     }
 
     .profile-icon img {
@@ -44,25 +106,29 @@
         border-radius: 50%;
     }
 
+    /* Feed */
     .feed {
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-top: 20px;
+        /* margin-left: 1px; */
+        padding-bottom: 50px;
     }
 
     .post-card {
         width: 500px;
-        background: #fff;
-        border: 1px solid #dbdbdb;
-        margin-bottom: 20px;
-        border-radius: 5px;
+        background: #1e1e1e;
+        border: 1px solid #2c2c2c;
+        margin-bottom: 25px;
+        border-radius: 10px;
         overflow: hidden;
         transition: box-shadow 0.3s;
     }
 
     .post-card:hover {
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
     }
 
     .post-header {
@@ -85,74 +151,310 @@
 
     .post-actions {
         padding: 10px;
+        display: flex;
+        align-items: center;
     }
 
-    .like-btn, .comment-btn {
-        border: none;
-        background: none;
-        font-size: 20px;
+    /* Like Button */
+    .like-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-right: 15px;
+    }
+
+    .like-checkbox {
+        display: none;
+    }
+
+    .like-icon {
+        font-size: 22px;
+        color: transparent;
+        -webkit-text-stroke: 2px #fff;
         cursor: pointer;
-        margin-right: 10px;
-        transition: transform 0.2s;
+        transition: color 0.3s, transform 0.2s;
     }
 
-    .like-btn:hover, .comment-btn:hover {
+    .like-checkbox:checked + .like-icon {
+        color: red;
+        -webkit-text-stroke: 0;
+        transform: scale(1.2);
+    }
+    
+    .like-icon:hover {
         transform: scale(1.2);
     }
 
-    .post-caption {
-        padding: 0 10px 10px 10px;
+    .comment-btn {
+        background: none;
+        border: none;
+        font-size: 22px;
+        color: #ddd;
+        cursor: pointer;
+        transition: transform 0.2s, color 0.3s;
     }
 
+    .comment-btn:hover {
+        transform: scale(1.2);
+        color: #fff;
+    }
+
+    .post-caption {
+        padding: 0 10px 15px 10px;
+        color: #ddd;
+    }
+    .logout-btn {
+        margin-top: auto;      /* pushes button to bottom */
+        display: block;        /* ensures it behaves like block element */
+        width: 100%;           /* optional, full width of sidebar */
+        padding: 12px;
+        color: #fff;
+        text-align: center;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+    .comment-modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85);
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        }
+
+        .modal-content {
+        display: flex;
+        background: #fff;
+        width: 80%;
+        max-width: 950px;
+        height: 80%;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        animation: popupFade 0.3s ease;
+        }
+
+        @keyframes popupFade {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-left {
+        flex: 1.2;
+        background: #000;
+        }
+
+        .modal-left img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;    /* same crop style as feed */
+        background-color: #000;
+        }
+
+        .modal-right {
+        flex: 0.8;
+        display: flex;
+        flex-direction: column;
+        color: #000;
+        background: #fafafa;
+        }
+
+        .modal-header {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        }
+
+        .modal-user-profile {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+        }
+
+        .modal-comments {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 15px;
+        }
+
+        .comment-form {
+        display: flex;
+        border-top: 1px solid #ddd;
+        }
+
+        .comment-form input {
+        flex: 1;
+        border: none;
+        padding: 10px;
+        outline: none;
+        background: #fff;
+        }
+
+        .comment-form button {
+        border: none;
+        background: none;
+        color: #0095f6;
+        font-weight: bold;
+        padding: 10px 15px;
+        cursor: pointer;
+        }
+
+        .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        color: #fff;
+        cursor: pointer;
+        z-index: 2100;
+        }
+        .follow-btn {
+        margin-left: auto;              /* right side push */
+        background: transparent;
+        border: 1px solid #0095f6;
+        color: #0095f6;
+        font-size: 14px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .follow-btn:hover {
+        background: #0095f6;
+        color: white;
+    }
+
+    /* When user is following */
+    .following {
+        background: #0095f6;
+        color: white;
+        border: 1px solid #0095f6;
+    }
+
+
 </style>
+{% block extra_css %}
+{% endblock %}
 </head>
 <body>
 
-<!-- Navbar -->
-<nav class="navbar">
+<!-- Sidebar -->
+<div class="sidebar">
     <div class="logo">InstaClone</div>
-    <input type="text" placeholder="Search" class="search-bar">
-    <div class="profile-icon">
-        <img src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="Profile">
-    </div>
-</nav>
-
-<!-- Feed -->
-<div class="feed">
-
-    <!-- Dummy Post 1 -->
-    <div class="post-card">
-        <div class="post-header">
-            <img class="post-profile" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
-            <span>john_doe</span>
-        </div>
-        <img class="post-image" src="{% static 'ExtraImage/loginImage1.jpg' %}" alt="Post">
-        <div class="post-actions">
-            <button class="like-btn">❤️</button>
-            <button class="comment-btn">💬</button>
-        </div>
-        <div class="post-caption">
-            <strong>john_doe</strong> Enjoying the sunny day! ☀️
-        </div>
-    </div>
-
-    <!-- Dummy Post 2 -->
-    <div class="post-card">
-        <div class="post-header">
-            <img class="post-profile" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
-            <span>jane_smith</span>
-        </div>
-        <img class="post-image" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="Post">
-        <div class="post-actions">
-            <button class="like-btn">❤️</button>
-            <button class="comment-btn">💬</button>
-        </div>
-        <div class="post-caption">
-            <strong>jane_smith</strong> Delicious brunch at my favorite cafe! 🍳
-        </div>
-    </div>
+    <a href="/homepage"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="#"><i class="fa-solid fa-magnifying-glass"></i> Explore</a>
+    <a href="#"><i class="fa-solid fa-video"></i> Reels</a>
+    <a href="#"><i class="fa-solid fa-paper-plane"></i> Messages</a>
+    <a href="#"><i class="fa-solid fa-heart"></i> Notifications</a>
+    <a href="/Post/createPost"><i class="fa-solid fa-circle-plus"></i> Create Post</a>
+    <a href="/profile"><i class="fa-solid fa-user"></i> Profile</a>
+    <a href="/logout" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
 
 </div>
 
+<!-- Navbar -->
+
+{% block content %}
+<!-- Feed -->
+<div class="feed">
+    <!-- Dummy Post 1 -->
+     {% for post in posts %}
+    <div class="post-card">
+        <div class="post-header">
+            <img class="post-profile" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
+            <span>{{post.user}}</span>
+            <button class="follow-btn">Follow</button>
+        </div>
+        <img class="post-image" src="{{post.image_url.url}}" alt="Post">
+        <div class="post-actions">
+            <label class="like-wrapper">
+                <input type="checkbox" class="like-checkbox">
+                <i class="fa-solid fa-heart like-icon"></i>
+            </label>
+            <button class="comment-btn"><i class="fa-regular fa-comment"></i></button>
+        </div>
+        <div class="post-caption">
+            {{post.caption}}
+        </div>
+    </div>
+    {%endfor%}
+
+</div>
+<!-- Comment Popup Modal -->
+<div class="comment-modal" id="commentModal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+
+    <div class="modal-left">
+      <img id="modalPostImage" src="" alt="Post Image">
+    </div>
+
+    <div class="modal-right">
+      <div class="modal-header">
+        <img src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User" class="modal-user-profile">
+        <span class="modal-username" id="modalUsername"></span>
+      </div>
+
+      <div class="modal-comments" id="modalComments">
+        <p><strong>user1</strong> Nice picture! 😍</p>
+        <p><strong>user2</strong> Awesome click 🔥</p>
+      </div>
+
+      <form class="comment-form">
+        <input type="text" placeholder="Add a comment..." id="commentInput">
+        <button type="button" id="postCommentBtn">Post</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("commentModal");
+  const closeBtn = document.querySelector(".close-btn");
+  const modalImage = document.getElementById("modalPostImage");
+  const modalUsername = document.getElementById("modalUsername");
+
+  document.querySelectorAll(".comment-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const postCard = btn.closest(".post-card");
+      const imageSrc = postCard.querySelector(".post-image").src;
+      const username = postCard.querySelector(".post-header span").innerText;
+
+      modalImage.src = imageSrc;
+      modalUsername.innerText = username;
+      modal.style.display = "flex";
+    });
+  });
+
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  window.addEventListener("click", e => {
+    if (e.target === modal) modal.style.display = "none";
+  });
+});
+
+document.querySelectorAll(".follow-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (btn.classList.contains("following")) {
+      btn.classList.remove("following");
+      btn.textContent = "Follow";
+    } else {
+      btn.classList.add("following");
+      btn.textContent = "Following";
+    }
+  });
+});
+
+</script>
+
 </html>
