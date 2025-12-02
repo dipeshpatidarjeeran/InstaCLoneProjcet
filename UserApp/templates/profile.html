@@ -39,7 +39,6 @@
   font-size: 22px;
   font-weight: 600;
 }
-
 .btn {
   padding: 6px 18px;
   border-radius: 8px;
@@ -47,6 +46,13 @@
   cursor: pointer;
   font-weight: 600;
   transition: 0.3s;
+  display: inline-block;      
+  text-decoration: none;     
+  text-align: center; 
+}
+
+.btn:hover {
+  text-decoration: none;      
 }
 
 .follow-btn {
@@ -57,7 +63,6 @@
 .follow-btn:hover {
   background: #0078d4;
 }
-
 .following {
   background: none;
   color: #0095f6;
@@ -126,18 +131,12 @@
   <!-- Profile Header -->
   <div class="profile-header">
     <div class="profile-pic">
-      <img src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
+      <img src="{{profile.profile_image}}" alt="User">
     </div>
 
     <div class="profile-info">
       <div class="profile-top">
-        <h2>{{ user.username }}</h2>
-
-        {% if is_following %}
-          <button class="btn following">Following</button>
-        {% else %}
-          <button class="btn follow-btn">Follow</button>
-        {% endif %}
+        <h2>{{ profile.user }}</h2>
       </div>
 
       <div class="profile-stats">
@@ -147,8 +146,13 @@
       </div>
 
       <div class="profile-bio">
-        <p>{{ user.bio|default:"No bio yet." }}</p>
+        <p>{{ profile.bio|default:"No bio yet." }}</p>
       </div>
+      {% if request.user == profile.user %}
+        <a href="{% url 'edit_profile' %}" class="btn follow-btn">
+            Edit Profile
+        </a>
+      {% endif %}
     </div>
   </div>
 

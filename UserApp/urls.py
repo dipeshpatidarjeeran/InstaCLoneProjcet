@@ -7,5 +7,6 @@ urlpatterns = [
     path("register", views.Register),
     path("", views.homepage),
     path("profile", views.profile),
-
+    path('follow/<int:user_id>/', views.follow_user, name='follow'),
+    path("edit_profile",views.edit_profile, name='edit_profile'),
 ]

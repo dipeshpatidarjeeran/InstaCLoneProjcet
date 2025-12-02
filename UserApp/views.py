@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.http import JsonResponse
 from PostApp.models import Post
 from django.contrib.auth.decorators import login_required
-
+from UserApp.models import Profile,Follower
 
 def login_user(request):
     if request.method == "GET":
@@ -22,7 +23,13 @@ def login_user(request):
 @login_required
 def homepage(request):
     post = Post.objects.all().order_by('-created_at')
-    return render(request,"homepage.html",{"posts":post})
+    following_users = []
+    if request.user.is_authenticated:
+        following_users = Follower.objects.filter(
+            follower=request.user
+        ).values_list('following_id', flat=True)
+
+    return render(request,"homepage.html",{"posts":post, "following_users": following_users})
 
 def Register(request):
     if request.method == "POST":
@@ -35,6 +42,8 @@ def Register(request):
         else:
             user = User.objects.create_user(username=username, email=email, password=password)
             user.save()
+            profile = Profile.objects.create(user=user)
+            profile.save()
             login(request, user)
             return redirect(login_user)
         
@@ -46,5 +55,31 @@ def logout_user(request):
     return redirect(homepage)
 
 def profile(request):
+    profile = Profile.objects.get(user=request.user)
     posts = Post.objects.filter(user=request.user)
-    return render(request,"profile.html",{"posts":posts})
+    followers_count = Follower.objects.filter(following=request.user).count()
+    following_count = Follower.objects.filter(follower=request.user).count()
+    return render(request,"profile.html",{"posts":posts,
+                                          "followers_count": followers_count,
+                                          "following_count": following_count,
+                                          "profile":profile})
+
+
+def follow_user(request,user_id):
+    user_to_follow = User.objects.get(id=user_id)
+
+    if user_to_follow == request.user:
+        return redirect(homepage)
+    
+    follow, created = Follower.objects.get_or_create(
+        follower=request.user,
+        following=user_to_follow
+    )
+    if not created:
+        follow.delete()
+        return redirect(homepage)
+
+    return redirect(homepage)
+
+def edit_profile(request):
+    pass

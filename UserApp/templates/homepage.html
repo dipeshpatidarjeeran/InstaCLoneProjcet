@@ -312,8 +312,11 @@
         cursor: pointer;
         z-index: 2100;
         }
+        .post-header form {
+            margin-left: auto;
+        }
         .follow-btn {
-        margin-left: auto;              /* right side push */
+        
         background: transparent;
         border: 1px solid #0095f6;
         color: #0095f6;
@@ -346,11 +349,11 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="logo">InstaClone</div>
-    <a href="/homepage"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/"><i class="fa-solid fa-house"></i> Home</a>
     <a href="#"><i class="fa-solid fa-magnifying-glass"></i> Explore</a>
-    <a href="#"><i class="fa-solid fa-video"></i> Reels</a>
+    <!-- <a href="#"><i class="fa-solid fa-video"></i> Reels</a> -->
     <a href="#"><i class="fa-solid fa-paper-plane"></i> Messages</a>
-    <a href="#"><i class="fa-solid fa-heart"></i> Notifications</a>
+    <!-- <a href="#"><i class="fa-solid fa-heart"></i> Notifications</a> -->
     <a href="/Post/createPost"><i class="fa-solid fa-circle-plus"></i> Create Post</a>
     <a href="/profile"><i class="fa-solid fa-user"></i> Profile</a>
     <a href="/logout" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
@@ -362,13 +365,24 @@
 {% block content %}
 <!-- Feed -->
 <div class="feed">
+     {% csrf_token %}
     <!-- Dummy Post 1 -->
      {% for post in posts %}
     <div class="post-card">
         <div class="post-header">
             <img class="post-profile" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
             <span>{{post.user}}</span>
-            <button class="follow-btn">Follow</button>
+            {% if request.user != post.user %}
+                <form method="post" action="{% url 'follow' post.user.id %}">
+                    {% csrf_token %}
+
+                    {% if post.user.id in following_users %}
+                        <button type="submit" class="follow-btn">Following</button>
+                    {% else %}
+                        <button type="submit" class="follow-btn">Follow</button>
+                    {% endif %}
+                </form>
+            {%endif%}
         </div>
         <img class="post-image" src="{{post.image_url.url}}" alt="Post">
         <div class="post-actions">
@@ -440,18 +454,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("click", e => {
     if (e.target === modal) modal.style.display = "none";
-  });
-});
-
-document.querySelectorAll(".follow-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (btn.classList.contains("following")) {
-      btn.classList.remove("following");
-      btn.textContent = "Follow";
-    } else {
-      btn.classList.add("following");
-      btn.textContent = "Following";
-    }
   });
 });
 

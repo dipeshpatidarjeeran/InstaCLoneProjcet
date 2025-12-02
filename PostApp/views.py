@@ -10,6 +10,6 @@ def createPost(request):
         if image:
             post = Post(user=request.user,caption=text,image_url=image)
             post.save()
-            return redirect("/homepage")
+            return redirect("/")
 
     return render(request,"createPost.html")
