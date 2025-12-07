@@ -370,7 +370,13 @@
      {% for post in posts %}
     <div class="post-card">
         <div class="post-header">
-            <img class="post-profile" src="{% static 'ExtraImage/loginImage2.jpg' %}" alt="User">
+            {% with prof=post.user.profile_set.first %}
+            {% if prof and prof.profile_image %}
+                <img src="{{ prof.profile_image.url }}" class="post-profile" alt="User">
+            {% else %}
+                <img src="{% static 'ExtraImage/images.jpg' %}" class="post-profile" alt="User">
+            {% endif %}
+            {% endwith %}
             <span>{{post.user}}</span>
             {% if request.user != post.user %}
                 <form method="post" action="{% url 'follow' post.user.id %}">

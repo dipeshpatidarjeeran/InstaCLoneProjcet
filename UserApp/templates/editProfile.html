@@ -1,0 +1,137 @@
+{% extends "homepage.html" %}
+{% load static %}
+{% block extra_css %}
+<style>
+.create-post-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px); 
+  width: 100%;
+}
+
+.create-post-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.create-post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.user-profile {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 2px solid #4e73df;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 17px;
+  color: #333;
+}
+
+.create-post-card h2 {
+  text-align: center;
+  margin: 10px 0 20px 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 700;
+  color: #141313;
+}
+
+.input-group textarea, 
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 15px;
+  transition: 0.3s;
+  color: #958585;
+}
+
+.input-group textarea {
+    height: 100px;
+}
+.input-group textarea:focus, 
+.input-group input[type="file"]:focus {
+  border-color: #4e73df;
+  box-shadow: 0 0 5px rgba(78,115,223,0.4);
+}
+
+.btn-post {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #4e73df, #1cc88a);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-post:hover {
+  background: linear-gradient(90deg, #1cc88a, #4e73df);
+  transform: scale(1.03);
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="create-post-container">
+    <div class="create-post-card">
+        <div class="post-header">
+            <img class="user-profile" src="{{profile.profile_image}}" alt="Profile">
+            <span class="username">{{ profile.user }}</span>
+        </div>
+
+        <h2>Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="caption">Edit Username</label>
+                <input type="text" value="{{profile.user}}" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="caption">Edit Bio</label>
+                <textarea id="caption" name="bio" required>{{profile.bio}}</textarea>
+            </div>
+            <div class="input-group">
+                <label for="image">Edit Profile Image</label>
+                {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" width="100"><br>
+                {% endif %}
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn-post">Edit Profile</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

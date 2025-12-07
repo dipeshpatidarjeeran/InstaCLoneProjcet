@@ -28,7 +28,6 @@ def homepage(request):
         following_users = Follower.objects.filter(
             follower=request.user
         ).values_list('following_id', flat=True)
-
     return render(request,"homepage.html",{"posts":post, "following_users": following_users})
 
 def Register(request):
@@ -54,7 +53,7 @@ def logout_user(request):
     logout(request)	
     return redirect(homepage)
 
-def profile(request):
+def user_profile(request):
     profile = Profile.objects.get(user=request.user)
     posts = Post.objects.filter(user=request.user)
     followers_count = Follower.objects.filter(following=request.user).count()
@@ -82,4 +81,20 @@ def follow_user(request,user_id):
     return redirect(homepage)
 
 def edit_profile(request):
-    pass
+    user = request.user
+    profile = Profile.objects.get(user=request.user)
+    if request.method == "POST":
+        username = request.POST.get("username")
+        bio = request.POST.get("bio")
+
+        if request.user.username != username:
+            user.username = username
+            user.save()
+
+        profile.bio = bio
+        if 'image' in request.FILES:
+            profile.profile_image = request.FILES['image']
+        profile.save()
+        return redirect(user_profile)
+    return render(request,"editProfile.html",{"profile":profile})
+    
