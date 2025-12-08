@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse
-from PostApp.models import Post
+from django.db.models import Count
+from PostApp.models import Post,Like
 from django.contrib.auth.decorators import login_required
 from UserApp.models import Profile,Follower
 
@@ -22,13 +23,26 @@ def login_user(request):
         
 @login_required
 def homepage(request):
-    post = Post.objects.all().order_by('-created_at')
+    # 🔹 Saare posts (sab users ke)
+    posts = (Post.objects.all().annotate(
+            total_likes=Count('likes', distinct=True),
+            total_comments=Count('comments', distinct=True)
+        ).order_by('-created_at'))
+
     following_users = []
     if request.user.is_authenticated:
-        following_users = Follower.objects.filter(
-            follower=request.user
-        ).values_list('following_id', flat=True)
-    return render(request,"homepage.html",{"posts":post, "following_users": following_users})
+        following_users = Follower.objects.filter(follower=request.user).values_list('following_id', flat=True)
+        user_likes = set(
+            Like.objects.filter(user=request.user, post__in=posts)
+                .values_list("post_id", flat=True)
+        )
+    else:
+        user_likes = set()
+    return render(request, "homepage.html", {
+        "posts": posts,
+        "following_users": following_users,
+        "user_likes": user_likes,
+    })
 
 def Register(request):
     if request.method == "POST":
@@ -54,7 +68,7 @@ def logout_user(request):
     return redirect(homepage)
 
 def user_profile(request):
-    profile = Profile.objects.get(user=request.user)
+    profile = Profile.objects.filter(user=request.user).first()
     posts = Post.objects.filter(user=request.user)
     followers_count = Follower.objects.filter(following=request.user).count()
     following_count = Follower.objects.filter(follower=request.user).count()
@@ -82,7 +96,7 @@ def follow_user(request,user_id):
 
 def edit_profile(request):
     user = request.user
-    profile = Profile.objects.get(user=request.user)
+    profile = Profile.objects.filter(user=request.user).first()
     if request.method == "POST":
         username = request.POST.get("username")
         bio = request.POST.get("bio")
@@ -98,3 +112,27 @@ def edit_profile(request):
         return redirect(user_profile)
     return render(request,"editProfile.html",{"profile":profile})
     
+
+
+def post_delete(request,pid):
+    post = get_object_or_404(Post,pk=pid,user=request.user)
+
+    if request.method == "POST":
+        post.delete()
+
+    return redirect(homepage)
+
+
+def post_update(request,pid):
+    post = get_object_or_404(Post,pk=pid,user=request.user)
+    if request.method == "POST":
+        caption = request.POST.get("caption")
+        post.caption = caption
+
+        if 'image' in request.FILES:
+            post.image_url = request.FILES['image']
+        post.save()
+
+        return redirect(homepage)
+
+    return render(request, "updatePost.html", {"post":post})

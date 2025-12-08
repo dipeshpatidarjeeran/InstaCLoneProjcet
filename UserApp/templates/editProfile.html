@@ -107,7 +107,11 @@
 <div class="create-post-container">
     <div class="create-post-card">
         <div class="post-header">
-            <img class="user-profile" src="{{profile.profile_image}}" alt="Profile">
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" class="post-profile" alt="User">
+            {% else %}
+                <img src="{% static 'ExtraImage/images.jpg' %}" class="post-profile" alt="User">
+            {% endif %}
             <span class="username">{{ profile.user }}</span>
         </div>
 

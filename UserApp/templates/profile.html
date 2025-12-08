@@ -131,7 +131,11 @@
   <!-- Profile Header -->
   <div class="profile-header">
     <div class="profile-pic">
-      <img src="{{profile.profile_image}}" alt="User">
+      {% if profile.profile_image %}
+          <img src="{{ profile.profile_image.url }}" class="post-profile" alt="User">
+      {% else %}
+          <img src="{% static 'ExtraImage/images.jpg' %}" class="post-profile" alt="User">
+      {% endif %}
     </div>
 
     <div class="profile-info">
@@ -148,7 +152,7 @@
       <div class="profile-bio">
         <p>{{ profile.bio|default:"No bio yet." }}</p>
       </div>
-      {% if request.user == profile.user %}
+      {% if request.user %}
         <a href="{% url 'edit_profile' %}" class="btn follow-btn">
             Edit Profile
         </a>
